@@ -1,7 +1,7 @@
 # 沉浸式数字相框
 
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-![预览图PC](https://bu.dusays.com/2025/03/22/67deb2a58428a.png)<br>
+![ff4f990c7aeafa6967396dbe75300f1.png](https://bu.dusays.com/2025/03/22/67deb759b8438.png)<br>
 基于现代 Web 技术实现的沉浸式图片展示方案，具有优雅的过渡动画和交互设计。
 ## 查看效果
 Previvew in [https://love.xuanbo.top/](https://love.xuanbo.top/)
