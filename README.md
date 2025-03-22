@@ -1,9 +1,10 @@
 # 沉浸式数字相框
 
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-
+![预览图PC](https://bu.dusays.com/2025/03/22/67deb2a58428a.png)<br>
 基于现代 Web 技术实现的沉浸式图片展示方案，具有优雅的过渡动画和交互设计。
-
+## 查看效果
+Previvew in [https://love.xuanbo.top/](https://love.xuanbo.top/)
 ## 功能特性
 
 ✨ **核心亮点**
@@ -28,16 +29,18 @@
 
 ```javascript
 const images = [
-  { url: 'your-image-1.jpg', caption: '图片说明1' },
-  { url: 'your-image-2.jpg', caption: '图片说明2' }
+  { url: 'your-image-1.jpg', caption: '这里是图片说明1' },
+  { url: 'your-image-2.jpg', caption: '这里是图片说明2' }
 ];
 ```
+备注:图片说明将显示在主标题下方
+
 
 2. 自定义显示内容
 
 ```html
-<div class="text">显示名称</div> <!-- 主标题 -->
-<div class="tip-text">交互提示文字</div>
+<div class="text">这里是主标题</div> <!-- 主标题 -->
+<div class="tip-text">点击屏幕切换图片<br>长按或右键下载此图片</div>
 ```
 
 ### 高级定制
@@ -82,35 +85,3 @@ contextMenu.appendChild(newMenuItem);
 | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/chrome/chrome_48x48.png" alt="Chrome" width="24">](https://www.google.com/chrome/) | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/firefox/firefox_48x48.png" alt="Firefox" width="24">](https://www.mozilla.org/firefox/) | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/safari/safari_48x48.png" alt="Safari" width="24">](https://www.apple.com/safari/) |
 |:---:|:---:|:---:|
 | 最新版 ✔ | 最新版 ✔ | 14.1+ ✔ |
-
-## 贡献指南
-
-欢迎通过 Issue 提交建议，或通过 Pull Request 参与开发：
-
-1. Fork 项目仓库
-2. 创建功能分支 (`git checkout -b feature/新功能`)
-3. 提交修改 (`git commit -am '添加新功能'`)
-4. 推送分支 (`git push origin feature/新功能`)
-5. 创建 Pull Request
-
----
-
-📌 **注意事项**
-- 请确保使用图片拥有合法版权
-- 部署到生产环境时建议压缩静态资源
-- 移动端建议添加 `viewport` meta 标签
-- 若需要离线功能可添加 Service Worker
-
-🔄 最后更新于 2024年6月
-```
-
-### 说明
-1. 代码块使用 ``` 包裹，确保语法高亮
-2. 表格使用标准的 Markdown 表格语法
-3. 列表层级清晰，使用规范的缩进
-4. 图片链接使用 HTML 标签，兼容性更好
-5. 包含完整的署名协议条款
-6. 提供清晰的贡献指南
-7. 注意事项使用醒目的标记符号
-
-可以直接将以上内容保存为 `README.md` 文件，适用于 GitHub 或其他支持 Markdown 的平台。
