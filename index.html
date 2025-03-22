@@ -178,7 +178,7 @@
   </div>
 
   <div class="overlay">
-    <div class="text">Bing</div>
+    <div class="text">Bing 每日一图</div>
     <div class="caption"></div> <!-- 新增注释区域 -->
     <div class="tip-text">点击屏幕切换图片</div>
   </div>
@@ -190,8 +190,8 @@
 
   <script>
     const images = [
-      { url: 'https://s.cn.bing.net/th?id=OHR.CenoteLilies_ZH-CN5915682591_1920x1080.jpg&rf=LaDigue_1920x1080.jpg&pid=hp', caption: '22,3,2025' },
-      { url: 'https://bu.dusays.com/2024/10/18/6712698e61774.jpg', caption: '2024' }
+      { url: 'https://global.bing.com/th?id=OHR.PandaSnow_ZH-CN5981854301_1920x1200.jpg', caption: '回归黑白世界 - 雪地里的大熊猫宝宝，中国 (© Cheryl Schneider/Alamy Stock Photo)' },
+      { url: 'https://global.bing.com/th?id=OHR.SuratThani_ZH-CN4797096558_1920x1200.jpg', caption: '丛林探险 - 俯瞰拷索山林国家公园，素叻府，泰国 (© Peetatham Kongkapech/Getty Images)' }
     ];
 
     let currentIndex = 0;
@@ -220,7 +220,7 @@
 
     // 更新标题和注释
     function updateTitleAndCaption(index) {
-      document.title = `🤔 | ${index + 1}/${images.length}`;
+      document.title = `Bing 每日一图 | ${index + 1}/${images.length}`;
       const captionElement = document.querySelector('.caption');
       const caption = images[index].caption;
 
