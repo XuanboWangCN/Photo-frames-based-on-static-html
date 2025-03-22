@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>必应相册</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/ico" href="https://blog.xuanbo.top/img/weblogo.png">
+  <style>
+    /* 全局样式 */
+    body, html {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-weight: 300;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      background: #1a1a1a;
+    }
+
+    /* 加载状态样式 */
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #0a0a0a;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      color: white;
+      z-index: 9999;
+      transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .loading-spinner {
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      border-top: 2px solid rgba(255, 255, 255, 0.8);
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      animation: spin 1s linear infinite;
+      margin-bottom: 16px;
+    }
+
+    .loading-text {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.6);
+      letter-spacing: 1px;
+    }
+
+    /* 图片容器样式 */
+    .image-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-size: cover;
+      background-position: center;
+      opacity: 0;
+      transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+                transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+      transform: scale(1.01);
+      will-change: opacity, transform;
+    }
+
+    .image-container.active {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .image-container.exit {
+      opacity: 0;
+      transform: scale(0.99);
+    }
+
+    /* 覆盖层样式 */
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      z-index: 2;
+      pointer-events: none;
+      background-color: rgba(0, 0, 0, 0.5); /* 图片变暗处理 */
+    }
+
+    .text {
+      color: white;
+      font-size: 24px;
+      text-align: center;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.81s cubic-bezier(0.4, 0, 0.2, 1);
+      text-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+      font-weight: 300; /* 细体 */
+    }
+
+    .text.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .caption {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 16px;
+      text-align: center;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 1.1s cubic-bezier(0.4, 0, 0.2, 1);
+      margin-top: 8px;
+      font-weight: 300;
+    }
+
+    .caption.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .tip-text {
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 14px;
+      position: absolute;
+      bottom: 30%;
+      opacity: 0;
+      transition: opacity 0.6s ease;
+      letter-spacing: 1px;
+      pointer-events: none;
+    }
+
+    .tip-text.active {
+      opacity: 1;
+    }
+
+    /* 右键菜单样式 */
+    .context-menu {
+      position: fixed;
+      background: rgba(30, 30, 30, 0.95);
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      z-index: 9999;
+      display: none;
+      overflow: hidden;
+      backdrop-filter: blur(4px);
+    }
+
+    .context-menu-item {
+      padding: 12px 24px;
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .context-menu-item:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateX(2px);
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="loading-overlay">
+    <div class="loading-spinner"></div>
+    <div class="loading-text">LOADING</div>
+  </div>
+
+  <div class="overlay">
+    <div class="text">Bing</div>
+    <div class="caption"></div> <!-- 新增注释区域 -->
+    <div class="tip-text">点击屏幕切换图片</div>
+  </div>
+
+  <!-- 右键菜单 -->
+  <div class="context-menu">
+    <div class="context-menu-item" id="downloadImage">下载此图片</div>
+  </div>
+
+  <script>
+    const images = [
+      { url: 'https://s.cn.bing.net/th?id=OHR.CenoteLilies_ZH-CN5915682591_1920x1080.jpg&rf=LaDigue_1920x1080.jpg&pid=hp', caption: '22,3,2025' },
+      { url: 'https://bu.dusays.com/2024/10/18/6712698e61774.jpg', caption: '2024' }
+    ];
+
+    let currentIndex = 0;
+    let isAnimating = false;
+    let currentContainer = null;
+
+    // 预加载图片
+    function preloadImages(imageList) {
+      return Promise.all(imageList.map(image => {
+        return new Promise((resolve, reject) => {
+          const img = new Image();
+          img.src = image.url;
+          img.onload = () => resolve(image);
+          img.onerror = (err) => reject(err);
+        });
+      }));
+    }
+
+    // 创建图片容器
+    function createImageContainer(url) {
+      const container = document.createElement('div');
+      container.className = 'image-container';
+      container.style.backgroundImage = `url('${url}')`;
+      return container;
+    }
+
+    // 更新标题和注释
+    function updateTitleAndCaption(index) {
+      document.title = `🤔 | ${index + 1}/${images.length}`;
+      const captionElement = document.querySelector('.caption');
+      const caption = images[index].caption;
+
+      if (caption) {
+        captionElement.textContent = caption;
+        captionElement.classList.add('active');
+      } else {
+        captionElement.classList.remove('active');
+      }
+    }
+
+    // 切换动画
+    async function performTransition() {
+      const nextIndex = (currentIndex + 1) % images.length;
+      const current = currentContainer;
+      const next = createImageContainer(images[nextIndex].url);
+
+      document.body.appendChild(next);
+
+      await new Promise(resolve => setTimeout(resolve, 30));
+
+      next.classList.add('active');
+      current.classList.add('exit');
+
+      await new Promise(resolve => {
+        current.addEventListener('transitionend', () => {
+          current.remove();
+          resolve();
+        }, { once: true });
+      });
+
+      currentIndex = nextIndex;
+      currentContainer = next;
+      updateTitleAndCaption(currentIndex);
+    }
+
+    // 处理点击事件
+    async function handleClick() {
+      if (isAnimating || images.length <= 1) return;
+      isAnimating = true;
+      await performTransition();
+      isAnimating = false;
+    }
+
+    // 右键菜单逻辑
+    const contextMenu = document.querySelector('.context-menu');
+    const downloadImageBtn = document.getElementById('downloadImage');
+
+    document.addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+      contextMenu.style.display = 'block';
+      contextMenu.style.left = `${e.pageX}px`;
+      contextMenu.style.top = `${e.pageY}px`;
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!contextMenu.contains(e.target)) {
+        contextMenu.style.display = 'none';
+      }
+    });
+
+    downloadImageBtn.addEventListener('click', () => {
+      const currentImageUrl = images[currentIndex].url;
+      const link = document.createElement('a');
+      link.href = currentImageUrl;
+      link.download = `image_${currentIndex + 1}.jpg`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      contextMenu.style.display = 'none';
+    });
+
+    // 初始化
+    async function init() {
+      try {
+        await preloadImages(images);
+
+        currentContainer = createImageContainer(images[0].url);
+        document.body.appendChild(currentContainer);
+
+        await new Promise(resolve => setTimeout(resolve, 80));
+        currentContainer.classList.add('active');
+
+        // 隐藏加载界面
+        document.querySelector('.loading-overlay').style.opacity = '0';
+        setTimeout(() => {
+          document.querySelector('.loading-overlay').remove();
+        }, 600);
+
+        // 显示文字和提示
+        document.querySelector('.text').classList.add('active');
+        updateTitleAndCaption(currentIndex); // 初始化注释
+
+        if (images.length > 1) {
+          const tip = document.querySelector('.tip-text');
+          tip.classList.add('active');
+
+          // 5秒后隐藏提示
+          setTimeout(() => {
+            tip.style.transition = 'opacity 0.8s ease';
+            tip.style.opacity = '0';
+            setTimeout(() => tip.remove(), 800);
+          }, 5000);
+
+          document.addEventListener('click', handleClick);
+        }
+      } catch (error) {
+        console.error('初始化失败:', error);
+        document.querySelector('.loading-overlay').innerHTML = '加载失败，请刷新页面';
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>
